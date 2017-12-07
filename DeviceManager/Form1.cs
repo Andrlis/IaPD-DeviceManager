@@ -36,7 +36,8 @@ namespace DeviceManager
 
             listView2.HeaderStyle = ColumnHeaderStyle.None;
 
-            button1.Enabled = false;
+            button2.Enabled = false;
+            button3.Enabled = false;
 
             foreach (var device in deviceController.devices)
             {
@@ -49,7 +50,7 @@ namespace DeviceManager
             listView1.Items.Add(device.Name);
         }
 
-        private void addDescription()
+        private void AddDescription()
         {
             listView2.Clear();
 
@@ -80,13 +81,13 @@ namespace DeviceManager
 
             listView2.Items.Add("Status: " + (deviceController.devices[selectedIndex].Status ? "on" : "off"));
 
-            button1.Text = (deviceController.devices[selectedIndex].Status ? "Turn off" : "Turn on");
-            button1.Enabled = true;
+            button2.Enabled = true;
+            button3.Enabled = true;
         }
 
 
 
-        private void listView1_MouseClick(object sender, MouseEventArgs e)
+        private void ListView1_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
@@ -95,16 +96,22 @@ namespace DeviceManager
                 if (selected != null && selected.Bounds.Contains(e.Location) == true)
                 {
                     selectedIndex = selected.Index;
-                    addDescription();
+                    AddDescription();
                 }
 
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button2_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(deviceController.TurnOnOff(deviceController.devices[selectedIndex]) ? "Ok" : "Try again");
-            addDescription();
+            MessageBox.Show(deviceController.EnableDevice(deviceController.devices[selectedIndex]) ? "Ok" : "Try again");
+            AddDescription();
+        }
+
+        private void Button3_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(deviceController.DisableDevice(deviceController.devices[selectedIndex]) ? "Ok" : "Try again");
+            AddDescription();
         }
     }
 }

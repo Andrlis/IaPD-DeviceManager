@@ -45,29 +45,54 @@ namespace DeviceManager.resources
 
         }
 
-        public bool TurnOnOff(Device device)
+        public bool EnableDevice(Device device)
         {
-            foreach (ManagementObject dev in new ManagementObjectSearcher("Select * from Win32_PnPEntity").Get())
+            bool isEnabled = false;
+
+            ManagementScope scope = new ManagementScope(@"\\" + Environment.MachineName + @"\root\CIMV2");
+            SelectQuery query = new SelectQuery("Select * from Win32_PnPEntity");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(scope,query);
+            foreach (ManagementObject dev in searcher.Get())
             {
                 if (dev["DeviceID"].ToString().Equals(device.DeviceID))
                 {
                     try
                     {
-                        dev.InvokeMethod(!device.Status ? "Enable" : "Disable", new object[] { true });
+                        dev.InvokeMethod("Enable", new object[] { false });
+                        isEnabled = true;
+                        device.Status = true;
                     }
-                    catch (ManagementException) { }
-
-                    if (Сheck(device))
-                    {
-                        device.Status = !device.Status;
-                        return true;
-                    }
-
-                    break;
+                    catch (ManagementException)
+                    { }
                 }
             }
 
-            return false;
+            return isEnabled;
+        }
+
+        public bool DisableDevice(Device device)
+        {
+            bool isEnabled = false;
+
+            ManagementScope scope = new ManagementScope(@"\\" + Environment.MachineName + @"\root\CIMV2");
+            SelectQuery query = new SelectQuery("Select * from Win32_PnPEntity");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(scope, query);
+            foreach (ManagementObject dev in searcher.Get())
+            {
+                if (dev["DeviceID"].ToString().Equals(device.DeviceID))
+                {
+                    try
+                    {
+                        dev.InvokeMethod("Disable", new object[] { false });
+                        isEnabled = true;
+                        device.Status = false;
+                    }
+                    catch (ManagementException)
+                    { }
+                }
+            }
+
+            return isEnabled;
         }
 
         public bool Сheck(Device device)
